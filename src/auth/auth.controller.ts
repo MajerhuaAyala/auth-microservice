@@ -1,5 +1,5 @@
 import { Controller, Inject } from '@nestjs/common';
-import { ClientKafka, MessagePattern } from '@nestjs/microservices';
+import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { firstValueFrom } from 'rxjs';
 
@@ -14,5 +14,10 @@ export class AuthController {
   async getJwt() {
     const user = await firstValueFrom(this.client.send('user', {}));
     return this.authService.createAccessToken(user.role, user.id);
+  }
+
+  @MessagePattern('auth.verify.user')
+  async verifyToken(@Payload() jwt: string) {
+    return this.authService.verifyToken(jwt);
   }
 }

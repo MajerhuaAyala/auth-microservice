@@ -11,4 +11,16 @@ export class AuthService {
       role,
     });
   }
+
+  async verifyToken(token: string) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { sub, iat, exp, ...user } = this.jwtService.verify(token, {
+        secret: 'recontra-secreto',
+      });
+      return this.jwtService.signAsync(user);
+    } catch (error) {
+      return { error: 'token no valido' };
+    }
+  }
 }
