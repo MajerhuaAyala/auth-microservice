@@ -1,40 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
+const configure = ClientsModule.register([
+  {
+    name: 'ACTION_SERVICE',
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: 'app-auth',
+        brokers: ['localhost:9092'],
+      },
+      consumer: {
+        groupId: 'auth-microservice',
+      },
+    },
+  },
+]);
+
 @Module({
-  imports: [
-    ClientsModule.register([
-      {
-        name: 'ACTION_SERVICE',
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            clientId: 'app-gateway',
-            brokers: ['localhost:9092'],
-          },
-          consumer: {
-            groupId: 'kafka-microservice',
-          },
-        },
-      },
-    ]),
-  ],
-  exports: [
-    ClientsModule.register([
-      {
-        name: 'ACTION_SERVICE',
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            clientId: 'app-gateway',
-            brokers: ['localhost:9092'],
-          },
-          consumer: {
-            groupId: 'kafka-microservice',
-          },
-        },
-      },
-    ]),
-  ],
+  imports: [configure],
+  exports: [configure],
 })
 export class KafkaModule {}
