@@ -3,17 +3,26 @@ import { AuthController } from './auth.controller';
 import { KafkaModule } from '../transport/kafka.module';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
+import { ApiConfigService } from '../config/api-config.service';
 
 @Module({
-  controllers: [AuthController],
   imports: [
     KafkaModule,
-    JwtModule.register({
-      global: true,
-      secret: 'recontra-secreto',
-      signOptions: { expiresIn: '2h' },
+    JwtModule.registerAsync({
+      useFactory: (configService: ApiConfigService) => ({
+        privateKey: configService.authConfig.privateKey,
+        publicKey: configService.authConfig.privateKey,
+        signOptions: {
+          algorithm: 'RS256',
+        },
+        verifyOptions: {
+          algorithms: ['RS256'],
+        },
+      }),
+      inject: [ApiConfigService],
     }),
   ],
+  controllers: [AuthController],
   providers: [AuthService],
   exports: [JwtModule, AuthService],
 })

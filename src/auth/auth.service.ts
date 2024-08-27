@@ -14,10 +14,7 @@ export class AuthService {
 
   async verifyToken(token: string) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { sub, iat, exp, ...user } = this.jwtService.verify(token, {
-        secret: 'recontra-secreto',
-      });
+      const { ...user } = this.jwtService.verifyAsync(token, {});
       return this.jwtService.signAsync(user);
     } catch (error) {
       return { error: 'token no valido' };
