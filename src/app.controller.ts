@@ -1,14 +1,15 @@
 import { Controller, Inject } from '@nestjs/common';
 import { Admin, Kafka } from 'kafkajs';
 import { ClientKafka } from '@nestjs/microservices';
+import { BROKERS, SERVICE_NAME, TOPICS_TO_WHICH_RESPONSE } from './config';
 
 @Controller()
 export class AppController {
   private admin: Admin;
-  constructor(@Inject('ACTION_SERVICE') private client: ClientKafka) {}
+  constructor(@Inject(SERVICE_NAME) private client: ClientKafka) {}
 
   async onModuleInit() {
-    const services = ['user'];
+    const services = TOPICS_TO_WHICH_RESPONSE;
 
     for (const service of services) {
       this.client.subscribeToResponseOf(service);
@@ -16,7 +17,7 @@ export class AppController {
 
     const kafka = new Kafka({
       clientId: 'auction-app',
-      brokers: ['localhost:9092'],
+      brokers: BROKERS,
     });
 
     this.admin = kafka.admin();

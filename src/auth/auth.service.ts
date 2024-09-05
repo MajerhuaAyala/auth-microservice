@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AuthService {
@@ -14,10 +15,13 @@ export class AuthService {
 
   async verifyToken(token: string) {
     try {
-      const { ...user } = this.jwtService.verifyAsync(token, {});
+      const { ...user } = await this.jwtService.verifyAsync(token);
       return this.jwtService.signAsync(user);
     } catch (error) {
-      return { error: 'token no valido' };
+      throw new RpcException({
+        status: 401,
+        message: 'Invalid token',
+      });
     }
   }
 }

@@ -2,11 +2,12 @@ import { Controller, Inject } from '@nestjs/common';
 import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { firstValueFrom } from 'rxjs';
+import { SERVICE_NAME } from '../config';
 
 @Controller()
 export class AuthController {
   constructor(
-    @Inject('ACTION_SERVICE') private client: ClientKafka,
+    @Inject(SERVICE_NAME) private client: ClientKafka,
     private authService: AuthService,
   ) {}
 
